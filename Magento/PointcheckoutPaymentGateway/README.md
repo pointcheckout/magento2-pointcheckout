@@ -1,4 +1,3 @@
-# magento2-pointcheckout
 Magento 2 extension for PointCheckout
 
 Extract the content to your magento\app\code folder 
