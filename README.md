@@ -5,11 +5,11 @@ Extract the content to your magento\app\code folder
 
 under magento\bin folder excute the folowing 
 
-php magento module:status ( you should see Magento_PointcheckoutPaymentGateway in disabled modules )
+php magento module:status ( you should see PointCheckout-PointCheckoutPaymentGatewayin disabled modules )
 
-excute command
+excute commands
 
-php magento module:enable Magento_PointcheckoutPaymentGateway --clear-static-content
+php magento module:enable PointCheckout-PointCheckoutPaymentGateway --clear-static-content
 
 php magento setup:upgrade 
 
