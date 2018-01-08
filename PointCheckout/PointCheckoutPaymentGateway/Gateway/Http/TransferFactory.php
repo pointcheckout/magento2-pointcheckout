@@ -34,7 +34,6 @@ class TransferFactory implements TransferFactoryInterface
      */
     public function create(array $request)
     {
-//         file_put_contents("/Applications/XAMPP/xamppfiles/htdocs/magento/var/log/yaser.log",date("Y-m-d h:i:sa") .'@@@@@ TRANSFER FACTORY @@@@@\r\n',FILE_APPEND);
         
         return $this->transferBuilder
             ->setBody($request)

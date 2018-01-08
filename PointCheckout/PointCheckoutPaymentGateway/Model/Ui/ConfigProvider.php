@@ -33,7 +33,6 @@ use Magento\Backend\App\AbstractAction;
      */
     public function getConfig()
     {
-//         file_put_contents("/Applications/XAMPP/xamppfiles/htdocs/magento/var/log/yaser.log",'######  checkout key from session is  #####\r\n'.date("Y-m-d") ,FILE_APPEND);
         return [
             'payment' => [
                 self::CODE => [

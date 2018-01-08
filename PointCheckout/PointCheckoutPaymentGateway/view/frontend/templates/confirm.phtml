@@ -4,8 +4,6 @@
  */
  $response = array();
  $response = $block->confirmPayment();
- file_put_contents("/Applications/XAMPP/xamppfiles/htdocs/magento/var/log/yaser.log", date("Y-m-d h:i:sa").'response is ...'.$response .' \r\n',FILE_APPEND);
- 
  $response_info = json_decode($response);
  if ($response_info ->success == true && $response_info ->result->status == 'PAID'){
     $actionUrl = $block->getSuccessUrl();

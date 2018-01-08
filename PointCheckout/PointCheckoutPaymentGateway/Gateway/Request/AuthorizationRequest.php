@@ -69,7 +69,6 @@ class AuthorizationRequest implements BuilderInterface
         $totals = $this->_totals->getTotalsCache();
         $storeOrder['grandtotal'] =   $order->getGrandTotalAmount();
         foreach ($totals as $total){
-//             file_put_contents("/Applications/XAMPP/xamppfiles/htdocs/magento/var/log/yaser.log",date("Y-m-d") .'######  total is    #'.$total->getCode().'#'.$total->getValue(),FILE_APPEND);
             switch($total->getCode()){
                 case 'shipping':
                     $storeOrder['shipping']=$total->getValue();

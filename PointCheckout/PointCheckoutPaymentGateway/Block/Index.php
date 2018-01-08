@@ -37,7 +37,6 @@ class Index extends \Magento\Framework\View\Element\Template
                 'Api-Key:'.$this->config->getValue('point_checkout_api_key'),
                 'Api-Secret:'.$this->config->getValue('point_checkout_api_secret')
             );
-//             file_put_contents("/Applications/XAMPP/xamppfiles/htdocs/magento/var/log/yaser.log", date("Y-m-d h:i:sa") .' NOW CONFIRM PAYMENT \r\n',FILE_APPEND);
             $_BASE_URL='';
             if ($this->config->getValue('point_checkout_mode') == '2'){
                 $_BASE_URL='https://pay.staging.pointcheckout.com';

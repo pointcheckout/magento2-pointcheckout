@@ -98,7 +98,6 @@ use Magento\Payment\Gateway\ConfigInterface;
                 //here if there is no response from PointCheckout throw exception so user stay in payment stage and have the chance to try again 
                 throw new \Exception();
             }else{
-                file_put_contents("/Applications/XAMPP/xamppfiles/htdocs/magento/var/log/yaser.log", date("Y-m-d h:i:sa") .'the response is ----'.json_encode($transferObject->getBody()).'########'.$response.'\r\n',FILE_APPEND);
             }
             // close cURL resource, and free up system resources
             curl_close($ch);
