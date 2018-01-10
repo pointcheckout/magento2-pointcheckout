@@ -1,4 +1,3 @@
-# magento2-pointcheckout
 Magento 2 extension for PointCheckout
 
 Extract the content to your magento\app\code folder 
@@ -7,7 +6,7 @@ under magento\bin folder excute the folowing
 
 php magento module:status ( you should see PointCheckout_PointCheckoutPaymentGateway in disabled modules )
 
-excute commands
+excute command
 
 php magento module:enable PointCheckout_PointCheckoutPaymentGateway --clear-static-content
 

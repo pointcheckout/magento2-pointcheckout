@@ -1,0 +1,30 @@
+<?php
+/**
+ * Copyright © 2017 PointCheckout. All rights reserved.
+ */
+ $response = array();
+ $response = $block->confirmPayment();
+ $response_info = json_decode($response);
+ if ($response_info ->success == true && $response_info ->result->status == 'PAID'){
+    $actionUrl = $block->getSuccessUrl();
+    
+ }elseif($response_info ->success == true && $response_info ->result->status == 'PENDING'){
+     $actionUrl = $block->getPointCheckoutUrl();
+     
+ }else{
+     $actionUrl = $block->getFailureUrl();
+ }
+ ?>
+<br/>
+   <img src="<?php echo $block->getViewFileUrl( 'PointCheckout_PointCheckoutPaymentGateway::images/please_wait.gif' );?>" /><br/>
+ <form id="frm_pointcheckout_confirm" action="<?php echo $actionUrl ?>" method="GET" style="display: none">
+  </form>
+        <script type="text/javascript">
+            require([
+                'jquery'
+            ], function(jQuery) {
+                jQuery(document).ready(function () {
+                	  jQuery('#frm_pointcheckout_confirm').submit();
+                });
+            });
+        </script>
