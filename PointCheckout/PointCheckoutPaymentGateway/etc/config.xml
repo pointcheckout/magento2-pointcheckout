@@ -13,7 +13,7 @@
                 <model>PointCheckoutPaymentGatewayFacade</model>
                 <order_status>pending_payment</order_status>
                 <payment_action>capture</payment_action>
-                <pointcheckout_staging>1</pointcheckout_staging>
+                <pointcheckout_staging>0</pointcheckout_staging>
                 <title>PointCheckout</title> 
                 <allowuserspecific>0</allowuserspecific>
                 <currency>USD</currency>
