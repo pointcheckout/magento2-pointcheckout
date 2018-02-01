@@ -7,7 +7,7 @@ under magento\bin folder excute the folowing
 
 php magento module:status ( you should see PointCheckout_PointCheckoutPaymentGateway in disabled modules )
 
-excute commands
+execute commands
 
 php magento module:enable PointCheckout_PointCheckoutPaymentGateway --clear-static-content
 
@@ -15,7 +15,7 @@ php magento setup:upgrade
 
 php setup:di:compile 
 
-now go to your admin panal stores->configuration->sales->PaymentMethods you would find pointcheckout listed on the availble payment methods 
+now go to your admin panal stores->configuration->sales->PaymentMethods you would find pointcheckout listed on the available payment methods 
 enter the configuration and save 
 
 
