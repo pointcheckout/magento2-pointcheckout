@@ -4,15 +4,15 @@
  */
 namespace PointCheckout\PointCheckoutPaymentGateway\Gateway\Http\Client;
 
+use Magento\Payment\Gateway\ConfigInterface;
 use Magento\Payment\Gateway\Http\ClientInterface;
 use Magento\Payment\Gateway\Http\TransferInterface;
 use Magento\Payment\Model\Method\Logger;
-use Magento\Payment\Gateway\ConfigInterface;
-    
+            
 
 
 
- class ClientMock   implements ClientInterface 
+class ClientMock  implements ClientInterface 
 {
     const SUCCESS = 1;
     const FAILURE = 0;
@@ -43,6 +43,7 @@ use Magento\Payment\Gateway\ConfigInterface;
     public function __construct(
         Logger $logger,ConfigInterface $config,
         \Magento\Checkout\Model\Session $session
+        
     ) {
         $this->logger = $logger;
         $this->config = $config;
@@ -78,6 +79,8 @@ use Magento\Payment\Gateway\ConfigInterface;
             }else{
                 $_BASE_URL='https://pay.test.pointcheckout.com';
             }
+            
+            $pointcheckoutAddress = $_BASE_URL.'/checkout/';
             $ch = curl_init($_BASE_URL.'/api/v1.0/checkout');
             
             // set URL and other appropriate options
@@ -97,7 +100,6 @@ use Magento\Payment\Gateway\ConfigInterface;
                         );
                 //here if there is no response from PointCheckout throw exception so user stay in payment stage and have the chance to try again 
                 throw new \Exception();
-            }else{
             }
             // close cURL resource, and free up system resources
             curl_close($ch);
@@ -110,6 +112,7 @@ use Magento\Payment\Gateway\ConfigInterface;
         $response_info = json_decode($response);
         if (($response_info->success == 'true' && $response_info->result->checkoutKey != null )) {
             $this->_session->clearStorage();
+            $this->_session->setData('pointcheckoutUrl',$pointcheckoutAddress.$response_info->result->checkoutKey);
             //add checkoutKey in session to use it in redirect controller
             $this->_session->setData('checkoutKey',$response_info->result->checkoutKey);
             //add checkoutId in session to use it in confirm controller
@@ -178,6 +181,7 @@ use Magento\Payment\Gateway\ConfigInterface;
 
         return [];
     }
+    
     
 
 }

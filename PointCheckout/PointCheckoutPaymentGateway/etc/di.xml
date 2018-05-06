@@ -67,10 +67,31 @@
         </arguments>
     </virtualType>
     
+    <!-- NEW ADDED  -->
+    <virtualType name="PointCheckoutPaymentGatewayCountryError" type="Magento\Framework\Phrase">
+        <arguments>
+            <argument name="text" xsi:type="string">
+                Sorry your billing country is not supported
+            </argument>
+        </arguments>
+    </virtualType>
+    
+    <!-- NEW ADDED  -->
+    <virtualType name="PointCheckoutPaymentGatewayGroupError" type="Magento\Framework\Phrase">
+        <arguments>
+            <argument name="text" xsi:type="string">
+                Sorry your account type is not supported
+            </argument>
+        </arguments>
+    </virtualType>
+    
+    <!-- Modified   -->
     <!-- Authorization Request,initialized with PointCheckoutPaymentGatewayConfig  -->
     <type name="PointCheckout\PointCheckoutPaymentGateway\Gateway\Request\AuthorizationRequest">
         <arguments>
             <argument name="config" xsi:type="object">PointCheckoutPaymentGatewayConfig</argument>
+            <argument name="countryMsg" xsi:type="object">PointCheckoutPaymentGatewayCountryError</argument>
+            <argument name="groupMsg" xsi:type="object">PointCheckoutPaymentGatewayGroupError</argument>
         </arguments>
     </type>
     

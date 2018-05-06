@@ -18,6 +18,7 @@ define(
             defaults: {
                 template: 'PointCheckout_PointCheckoutPaymentGateway/payment/form'
             },
+          
             getCode: function() {
                 return 'pointcheckout_gateway';
             },
@@ -34,7 +35,6 @@ define(
              * @override
              */
             placeOrder: function () {
-
                 var self = this;
                 var paymentData = quote.paymentMethod();
                 paymentData = JSON.parse(JSON.stringify(paymentData));
