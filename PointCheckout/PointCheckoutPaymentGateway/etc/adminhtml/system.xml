@@ -33,7 +33,7 @@
                     <label>Payment From Specific Countries</label>
                     <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
                 </field>
-                <!-- <field id="allowuserspecific" translate="label" type="allowuserspecific" sortOrder="140" showInDefault="9"
+                <field id="allowuserspecific" translate="label" type="select" sortOrder="140" showInDefault="9"
                        showInWebsite="1" showInStore="0">
                     <label>Payment From Applicable User Groups</label>
                     <source_model>PointCheckout\PointCheckoutPaymentGateway\Model\Adminhtml\Source\Allspecificusergroup</source_model>
@@ -42,7 +42,7 @@
                        showInWebsite="1" showInStore="0">
                     <label>Payment From Specific User Groups</label>
                     <source_model>Magento\Customer\Model\Config\Source\Group</source_model>
-                </field> -->
+                </field> 
                 <field id="order_status" translate="label" type="select" sortOrder="160" showInDefault="1" showInWebsite="1"
                        showInStore="0">
                     <label>New Order Status</label>
