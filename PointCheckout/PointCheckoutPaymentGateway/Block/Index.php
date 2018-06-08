@@ -26,7 +26,7 @@ class Index extends \Magento\Framework\View\Element\Template
     }
     
     /**
-     * getting the checkoutId that has been stored in session and make an api call to confirm payment 
+     * getting the checkoutId from request and make an api call to confirm payment 
      */
     public function confirmPayment()
     {
@@ -37,27 +37,21 @@ class Index extends \Magento\Framework\View\Element\Template
                 'Api-Key:'.$this->config->getValue('point_checkout_api_key'),
                 'Api-Secret:'.$this->config->getValue('point_checkout_api_secret')
             );
-            $_BASE_URL='';
-            if ($this->config->getValue('point_checkout_mode') == '2'){
-                $_BASE_URL='https://pay.staging.pointcheckout.com';
-            }elseif(!$this->config->getValue('point_checkout_mode')){
-                $_BASE_URL='https://pay.pointcheckout.com';
-            }else{
-                $_BASE_URL='https://pay.test.pointcheckout.com';
-            }
-            $ch = curl_init($_BASE_URL.'/api/v1.0/checkout/'.$this->getSessionData('checkoutId'));
+            $_BASE_URL= $this->getPointcheckoutBaseUrl();
+            $ch = curl_init($_BASE_URL.'/api/v1.0/checkout/'.$_REQUEST['checkout']);
             
             // set URL and other appropriate options
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_HTTPHEADER,$headers);
             // grab URL and pass it to the browser
             $response = curl_exec($ch);
-            $response_info = json_decode($response);
+            if($response)
+               $response_info = json_decode($response);
             
-            if (!$response && ($response_info->result->status != 'PAID' && $response_info->result->status != 'PENDING') ){
+               if (!$response || ($response_info->success == 'true' && $response_info->result->status != 'PAID' && $response_info->result->status != 'PENDING')){
                 //if payment failed or pending order change to cancel so customer will notice that his order did not pass.
                 $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-                $order = $objectManager->create('\Magento\Sales\Model\Order')->loadByIncrementId($response_info->result->referenceId);
+                $order = $objectManager->create('\Magento\Sales\Model\Order')->loadByIncrementId($_REQUEST['reference']);
                 $orderState = Order::STATE_CANCELED;
                 $order->setState($orderState)->setStatus(Order::STATE_CANCELED);
                 $order->addStatusHistoryComment('payment by pointcheckout failed ');
@@ -107,7 +101,7 @@ class Index extends \Magento\Framework\View\Element\Template
     public function getSuccessUrl()
     {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $order = $objectManager->create('\Magento\Sales\Model\Order')->loadByIncrementId($this->_session->getData('referenceId'));
+        $order = $objectManager->create('\Magento\Sales\Model\Order')->loadByIncrementId($_REQUEST['reference']);
         $orderState = Order::STATE_PROCESSING;
         $order->setState($orderState)->setStatus(Order::STATE_PROCESSING);
         $order->save();
@@ -122,7 +116,7 @@ class Index extends \Magento\Framework\View\Element\Template
     public function getFailureUrl()
     {
         
-        return $this->url->getRouteUrl('checkout/cart');
+        return $this->url->getRouteUrl('checkout/onepage/failure'');
     }
     
     /**
@@ -137,7 +131,20 @@ class Index extends \Magento\Framework\View\Element\Template
         $orderState = Order::STATE_PENDING_PAYMENT;
         $order->setState($orderState)->setStatus(Order::STATE_PENDING_PAYMENT);
         $order->save();
-        return 'https://pay.staging.pointcheckout.com/checkout/'.$this->_session->getData('checkoutKey').'?returnUrl='.$this->url->getRouteUrl('pointcheckout/payment/confirm');
+        return $this->getPointcheckoutBaseUrl().'/checkout/'.$this->_session->getData('checkoutKey').'?returnUrl='.$this->url->getRouteUrl('pointcheckout/payment/confirm');
+    }
+    
+    /*
+     * 
+     */
+    
+    private function getPointcheckoutBaseUrl(){
+        if ($this->config->getValue('point_checkout_mode') == '2'){
+            return 'https://pay.staging.pointcheckout.com';
+        }elseif(!$this->config->getValue('point_checkout_mode')){
+            return 'https://pay.pointcheckout.com';
+        }
+        return 'https://pay.test.pointcheckout.com';
     }
     
     /**
