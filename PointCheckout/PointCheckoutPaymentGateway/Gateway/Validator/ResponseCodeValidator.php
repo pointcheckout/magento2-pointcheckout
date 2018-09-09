@@ -35,7 +35,7 @@ class ResponseCodeValidator extends AbstractValidator
         } else {
             return $this->createResult(
                 false,
-                [__('Gateway rejected the transaction.')]
+                [__('PointCheckout Server rejected the transaction with message: '.$response['ERROR'])]
             );
         }
     }

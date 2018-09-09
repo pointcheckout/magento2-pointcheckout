@@ -37,7 +37,7 @@ class Index extends \Magento\Framework\View\Element\Template
                 'Api-Key:'.$this->config->getValue('point_checkout_api_key'),
                 'Api-Secret:'.$this->config->getValue('point_checkout_api_secret')
             );
-            $_BASE_URL= $this->getPointcheckoutBaseUrl();
+            $_BASE_URL=$this->getPointcheckoutBaseUrl();
             $ch = curl_init($_BASE_URL.'/api/v1.0/checkout/'.$_REQUEST['checkout']);
             
             // set URL and other appropriate options
@@ -47,14 +47,26 @@ class Index extends \Magento\Framework\View\Element\Template
             $response = curl_exec($ch);
             if($response)
                $response_info = json_decode($response);
-            
-               if (!$response || ($response_info->success == 'true' && $response_info->result->status != 'PAID' && $response_info->result->status != 'PENDING')){
+            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+            $order = $objectManager->create('\Magento\Sales\Model\Order')->loadByIncrementId($_REQUEST['reference']);
+            if (!$response ){
                 //if payment failed or pending order change to cancel so customer will notice that his order did not pass.
-                $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-                $order = $objectManager->create('\Magento\Sales\Model\Order')->loadByIncrementId($_REQUEST['reference']);
                 $orderState = Order::STATE_CANCELED;
                 $order->setState($orderState)->setStatus(Order::STATE_CANCELED);
                 $order->addStatusHistoryComment('payment by pointcheckout failed ');
+                $order->save();
+            }else if ($response_info->success && $response_info->result->status == 'PAID'){
+                //if payment failed or pending order change to cancel so customer will notice that his order did not pass.
+                $order->addStatusHistoryComment($this->getOrderHistoryMessage($response_info->result->status, $response_info->result->cod, $_REQUEST['checkout'], $order,true));
+                $order->save();
+            }else if(!$response_info->success){
+                //if payment failed or pending order change to cancel so customer will notice that his order did not pass.
+                $orderState = Order::STATE_CANCELED;
+                $order->setState($orderState)->setStatus(Order::STATE_CANCELED);
+                $order->addStatusHistoryComment('payment by pointcheckout failed [ERROR_MSG] = '.$response_info->error);
+                $order->save();
+            }else{//success true but with unpaid status
+                $order->addStatusHistoryComment($this->getOrderHistoryMessage($response_info->result->status, $response_info->result->cod, $_REQUEST['checkout'], $order,true));
                 $order->save();
             }
             // close cURL resource, and free up system resources
@@ -116,7 +128,7 @@ class Index extends \Magento\Framework\View\Element\Template
     public function getFailureUrl()
     {
         
-        return $this->url->getRouteUrl('checkout/onepage/failure'');
+        return $this->url->getRouteUrl('checkout/onepage/failure');
     }
     
     /**
@@ -129,7 +141,8 @@ class Index extends \Magento\Framework\View\Element\Template
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $order = $objectManager->create('\Magento\Sales\Model\Order')->loadByIncrementId($this->_session->getData('referenceId'));
         $orderState = Order::STATE_PENDING_PAYMENT;
-        $order->setState($orderState)->setStatus(Order::STATE_PENDING_PAYMENT);
+        $order->setState($orderState)->setStatus($this->config->getValue('order_status'));
+        $order->addStatusHistoryComment($this->getOrderHistoryMessage("PENDING", 0, $this->_session->getData('checkoutId'), $order,false));
         $order->save();
         return $this->getPointcheckoutBaseUrl().'/checkout/'.$this->_session->getData('checkoutKey').'?returnUrl='.$this->url->getRouteUrl('pointcheckout/payment/confirm');
     }
@@ -147,6 +160,41 @@ class Index extends \Magento\Framework\View\Element\Template
         return 'https://pay.test.pointcheckout.com';
     }
     
+    private function getOrderHistoryMessage($orderStatus,$codAmount,$checkout,$order,$onConfirm){
+        switch($orderStatus){
+            case 'PAID':
+                $color='style="color:green;"';
+                break;
+            case 'PENDING':
+                $color='style="color:BLUE;"';
+                break;
+            default:
+                $color='style="color:RED;"';
+        }
+        $message = 'PointCheckout Status: <b '.$color.'>'.$orderStatus.'</b><br/>PointCheckout Transaction ID: <b style="color:blue;">'.$checkout.'</b> <br/>';
+        if(!$onConfirm){
+            $message .= 'Transaction Url: <b style="color:#a26a7b;">'. $this->getAdminUrl().'/merchant/transactions/'.$checkout.'/read </b>'."\n" ;
+        }
+        if($codAmount>0){
+            $message.= '<b style="color:red;">[NOTICE] </b><i>COD Amount: <b>'.$codAmount.' '.$order->getCurrencyCode().'</b></i>'."\n";
+        }
+        
+        return $message;
+    }
+    
+    
+    private function getAdminUrl(){
+        if ($this->config->getValue('point_checkout_mode') == '2'){
+            $_ADMIN_URL='https://admin.staging.pointcheckout.com';
+        }elseif(!$this->config->getValue('point_checkout_mode')){
+            $_ADMIN_URL='https://admin.pointcheckout.com';
+        }else{
+            $_ADMIN_URL='https://admin.test.pointcheckout.com';
+        }
+  
+        return $_ADMIN_URL;
+        
+    }
     /**
      * 
      * @return string
