@@ -21,6 +21,7 @@ class AuthorizationRequest implements BuilderInterface
     private $_pointcheckoutAlert;
     private $countryMsg;
     private $groupMsg;
+    private $_storeManager;
     protected $_session;
     /**
      * @param ConfigInterface $config
@@ -31,7 +32,8 @@ class AuthorizationRequest implements BuilderInterface
         \Magento\Framework\Message\ManagerInterface $messageManager,
         \Magento\Framework\Phrase $countryMsg,
         \Magento\Framework\Phrase $groupMsg,
-        \Magento\Customer\Model\Session $session
+        \Magento\Customer\Model\Session $session,
+        \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
         $this->_totals = $totals;
         $this->config = $config;
@@ -39,6 +41,7 @@ class AuthorizationRequest implements BuilderInterface
         $this->countryMsg = $countryMsg;
         $this->groupMsg = $groupMsg;
         $this->_session = $session;
+        $this->_storeManager = $storeManager;
     }
 
     /**
@@ -170,6 +173,9 @@ class AuthorizationRequest implements BuilderInterface
         
         $storeOrder['customer'] = $customer;
         
+        $storeOrder['successUrl']  = $this->_storeManager->getStore()->getBaseUrl().'pointcheckout/payment/confirm';
+        $storeOrder['failureUrl']  = $this->_storeManager->getStore()->getBaseUrl().'pointcheckout/payment/confirm';
+                
         return $storeOrder;
     }
 }

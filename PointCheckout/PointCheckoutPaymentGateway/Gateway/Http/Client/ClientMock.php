@@ -71,15 +71,7 @@ class ClientMock  implements ClientInterface
                 'Api-Secret:'.$this->config->getValue('point_checkout_api_secret')
             );
             
-            $_BASE_URL='';
-            if ($this->config->getValue('point_checkout_mode') == '2'){
-                $_BASE_URL='https://pay.staging.pointcheckout.com';
-            }elseif(!$this->config->getValue('point_checkout_mode')){
-                $_BASE_URL='https://pay.pointcheckout.com';
-            }else{
-                $_BASE_URL='https://pay.test.pointcheckout.com';
-            }
-            
+            $_BASE_URL=$this->getPointcheckoutBaseUrl();
             $pointcheckoutAddress = $_BASE_URL.'/checkout/';
             $ch = curl_init($_BASE_URL.'/api/v1.0/checkout');
             
@@ -93,11 +85,11 @@ class ClientMock  implements ClientInterface
             
             if (!$response){
                 $this->logger->debug(
-                            [
-                                    'request' => $transferObject->getBody(),
-                                    'response' =>$response
-                                ]
-                        );
+                    [
+                        'request' => $transferObject->getBody(),
+                        'response' =>$response
+                    ]
+                    );
                 //here if there is no response from PointCheckout throw exception so user stay in payment stage and have the chance to try again 
                 throw new \Exception();
             }
@@ -121,13 +113,20 @@ class ClientMock  implements ClientInterface
             $this->_session->setData('referenceId',$response_info->result->referenceId);
             
             $response = $this->generateResponseForCode(
-                $this->results[0]
+                self::SUCCESS,$response_info
                 );
             return $response;
         }else{
             $response = $this->generateResponseForCode(
-                $this->results[1]
+                self::FAILURE,$response_info
                 );
+            $this->logger->debug(
+               [
+                   'cause' => 'error',
+                   'message' =>$response_info->error
+               ]
+               );
+           
             return $response;
         }
         
@@ -138,27 +137,19 @@ class ClientMock  implements ClientInterface
      *
      * @return array
      */
-    protected function generateResponseForCode($resultCode)
+    protected function generateResponseForCode($resultCode,$response)
     {
 
         return array_merge(
             [
                 'RESULT_CODE' => $resultCode,
-                'TXN_ID' => $this->generateTxnId(),
+                'ERROR'       => isset($response->error)?$response->error:"",
+                'TXN_ID'      => $response->result->checkoutId
                 
             ],
             $this->getFieldsBasedOnResponseType($resultCode)
         );
     }
-
-    /**
-     * @return string
-     */
-    protected function generateTxnId()
-    {
-        return md5(mt_rand(0, 1000));
-    }
-
 
     /**
      * Returns response fields for result code
@@ -171,17 +162,31 @@ class ClientMock  implements ClientInterface
         switch ($resultCode) {
             case self::FAILURE:
                 return [
-                    'FRAUD_MSG_LIST' => [
-                        'Stolen card',
-                        'Customer location differs'
-                        
+                'ERROR_MSG_LIST' => [
+                'error connecting to pointcheckout'
+                    
                     ]
-                ];
+                    ];
         }
-
+        
         return [];
     }
     
+    /**
+     * 
+     */
+    
+    private function getPointcheckoutBaseUrl(){
+        $_BASE_URL='';
+        if ($this->config->getValue('point_checkout_mode') == '2'){
+            $_BASE_URL='https://pay.staging.pointcheckout.com';
+        }elseif(!$this->config->getValue('point_checkout_mode')){
+            $_BASE_URL='https://pay.pointcheckout.com';
+        }else{
+            $_BASE_URL='https://pay.test.pointcheckout.com';
+        }
+        return $_BASE_URL;
+    }
     
 
 }
