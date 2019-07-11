@@ -178,9 +178,9 @@ class ClientMock  implements ClientInterface
     
     private function getPointcheckoutBaseUrl(){
         $_BASE_URL='';
-        if ($this->config->getValue('point_checkout_mode') == '2'){
+        if($this->config->getValue('point_checkout_mode') == '2'){
             $_BASE_URL='https://pay.staging.pointcheckout.com';
-        }elseif(!$this->config->getValue('point_checkout_mode')){
+        }elseif($this->config->getValue('point_checkout_mode') == '1'){
             $_BASE_URL='https://pay.pointcheckout.com';
         }else{
             $_BASE_URL='https://pay.test.pointcheckout.com';
