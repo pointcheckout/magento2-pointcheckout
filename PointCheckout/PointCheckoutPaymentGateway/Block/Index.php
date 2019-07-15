@@ -154,7 +154,7 @@ class Index extends \Magento\Framework\View\Element\Template
     private function getPointcheckoutBaseUrl(){
         if ($this->config->getValue('point_checkout_mode') == '2'){
             return 'https://pay.staging.pointcheckout.com';
-        }elseif(!$this->config->getValue('point_checkout_mode')){
+        }elseif($this->config->getValue('point_checkout_mode') == '1'){
             return 'https://pay.pointcheckout.com';
         }
         return 'https://pay.test.pointcheckout.com';
@@ -186,7 +186,7 @@ class Index extends \Magento\Framework\View\Element\Template
     private function getAdminUrl(){
         if ($this->config->getValue('point_checkout_mode') == '2'){
             $_ADMIN_URL='https://admin.staging.pointcheckout.com';
-        }elseif(!$this->config->getValue('point_checkout_mode')){
+        }elseif($this->config->getValue('point_checkout_mode') == '1'){
             $_ADMIN_URL='https://admin.pointcheckout.com';
         }else{
             $_ADMIN_URL='https://admin.test.pointcheckout.com';
