@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <payment>
+            <pointcheckout_cardgateway>
+                <debug>1</debug>
+                <active>0</active>
+                <model>CardFacade</model>
+                <order_status>pending_payment</order_status>
+                <payment_action>authorize</payment_action>
+                <pointcheckout_staging>0</pointcheckout_staging>
+                <title>PointCheckout Card Payment</title> 
+                <allowuserspecific>0</allowuserspecific>
+                <currency>USD</currency>
+                <can_authorize>1</can_authorize>
+                <can_capture>0</can_capture>
+                <can_void>0</can_void>
+                <can_use_checkout>1</can_use_checkout>
+                <is_gateway>1</is_gateway>
+                <sort_order>1</sort_order>
+                <paymentInfoKeys>FRAUD_MSG_LIST</paymentInfoKeys>
+                <privateInfoKeys>FRAUD_MSG_LIST</privateInfoKeys>
+            </pointcheckout_cardgateway>
+        </payment>
+    </default>
+</config>

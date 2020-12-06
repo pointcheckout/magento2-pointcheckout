@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="payment">
+            <group id="pointcheckout_cardgateway" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>PointCheckout Card Payment</label>
+                <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="pointcheckout_mode" translate="label" type="select" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Live or Test Mode</label>
+                    <source_model>PointCheckout\Card\Model\Adminhtml\Source\PaymentMode</source_model>
+                </field>
+                <field id="pointcheckout_api_key" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Api Key</label>
+                </field>
+                <field id="pointcheckout_api_secret" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Api Secret</label>
+                </field>
+                <field id="allowspecific" translate="label" type="allowspecific" sortOrder="130" showInDefault="9"
+                       showInWebsite="1" showInStore="0">
+                    <label>Payment From Applicable Countries</label>
+                    <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
+                </field>
+                <field id="specificcountry" translate="label" type="multiselect" sortOrder="135" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
+                    <label>Payment From Specific Countries</label>
+                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                </field>
+                <field id="allowuserspecific" translate="label" type="select" sortOrder="140" showInDefault="9"
+                       showInWebsite="1" showInStore="0">
+                    <label>Payment From Applicable User Groups</label>
+                    <source_model>PointCheckout\Card\Model\Adminhtml\Source\Allspecificusergroup</source_model>
+                </field>
+                <field id="specificusergroup" translate="label" type="multiselect" sortOrder="145" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
+                    <label>Payment From Specific User Groups</label>
+                    <source_model>Magento\Customer\Model\Config\Source\Group</source_model>
+                </field> 
+                <field id="order_status" translate="label" type="select" sortOrder="160" showInDefault="1" showInWebsite="1"
+                       showInStore="0">
+                    <label>New Order Status</label>
+                    <source_model>PointCheckout\Card\Model\Adminhtml\Source\OrderStatus</source_model>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

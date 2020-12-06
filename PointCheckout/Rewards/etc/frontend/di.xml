@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Checkout\Model\CompositeConfigProvider">
+        <arguments>
+            <argument name="configProviders" xsi:type="array">
+                <item name="pointcheckout_rewardgateway_config_provider" xsi:type="object">PointCheckout\Rewards\Model\Ui\ConfigProvider</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="PointCheckout\Rewards\Block\Info">
+        <arguments>
+            <argument name="data" xsi:type="array">
+                <item xsi:type="string" name="is_secure_mode">1</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\App\RouterList">
+        <arguments>
+            <argument name="routerList" xsi:type="array">
+                <item name="pointcheckoutreward" xsi:type="array">
+                    <item name="class" xsi:type="string">PointCheckout\Rewards\Controller\Reward\Confirm</item>
+                    <item name="disable" xsi:type="boolean">false</item>
+                    <item name="sortOrder" xsi:type="string">160</item>
+                </item>
+                <item name="rewardredirect" xsi:type="array">
+                    <item name="class" xsi:type="string">PointCheckout\Rewards\Controller\Reward\Redirect</item>
+                    <item name="disable" xsi:type="boolean">false</item>
+                    <item name="sortOrder" xsi:type="string">165</item>
+                </item>
+            </argument>
+        </arguments>
+    </type> 
+    <type name="Magento\Framework\Url\SecurityInfo">
+        <arguments>
+            <argument name="secureUrlList" xsi:type="array">
+                <item name="pointcheckoutreward" xsi:type="string">/pointcheckoutreward/</item>
+                <item name="rewardredirect" xsi:type="string">/rewardredirect/</item>
+                
+            </argument>
+        </arguments>
+    </type>
+</config>

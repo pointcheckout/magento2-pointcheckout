@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Payment Method Facade configuration -->
+    <virtualType name="RewardsFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">\PointCheckout\Rewards\Model\Ui\ConfigProvider::CODE</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">PointCheckout\Rewards\Block\Info</argument>
+            <argument name="valueHandlerPool" xsi:type="object">RewardsValueHandlerPool</argument>
+            <argument name="commandPool" xsi:type="object">RewardsCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Configuration reader -->
+    <virtualType name="RewardsConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">\PointCheckout\Rewards\Model\Ui\ConfigProvider::CODE</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Logger, initialized with RewardsConfig -->
+    <virtualType name="RewardsLogger" type="Magento\Payment\Model\Method\Logger">
+        <arguments>
+            <argument name="config" xsi:type="object">RewardsConfig</argument>
+        </arguments>
+    </virtualType>
+    
+    <!-- Client, initialized with RewardsConfig and RewardsLogger< -->
+    <type name="PointCheckout\Rewards\Gateway\Http\Client\ClientMock">
+        <arguments>
+            <argument name="logger" xsi:type="object">RewardsLogger</argument>
+            <argument name="config" xsi:type="object">RewardsConfig</argument>
+        </arguments>
+    </type>
+
+    <!-- Commands infrastructure -->
+    <virtualType name="RewardsCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="authorize" xsi:type="string">RewardsAuthorizeCommand</item>   
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Authorize command -->
+    <virtualType name="RewardsAuthorizeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">RewardsAuthorizationRequest</argument>
+            <argument name="handler" xsi:type="object">RewardsResponseHandlerComposite</argument>
+            <argument name="transferFactory" xsi:type="object">PointCheckout\Rewards\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">PointCheckout\Rewards\Gateway\Validator\ResponseCodeValidator</argument>
+            <argument name="client" xsi:type="object">PointCheckout\Rewards\Gateway\Http\Client\ClientMock</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Authorization Request -->
+    <virtualType name="RewardsAuthorizationRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="transaction" xsi:type="string">PointCheckout\Rewards\Gateway\Request\AuthorizationRequest</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    
+    <!-- NEW ADDED  -->
+    <virtualType name="RewardsCountryError" type="Magento\Framework\Phrase">
+        <arguments>
+            <argument name="text" xsi:type="string">
+                Sorry your billing country is not supported
+            </argument>
+        </arguments>
+    </virtualType>
+    
+    <!-- NEW ADDED  -->
+    <virtualType name="RewardsGroupError" type="Magento\Framework\Phrase">
+        <arguments>
+            <argument name="text" xsi:type="string">
+                Sorry your account type is not supported
+            </argument>
+        </arguments>
+    </virtualType>
+    
+    <!-- Modified   -->
+    <!-- Authorization Request,initialized with RewardsConfig  -->
+    <type name="PointCheckout\Rewards\Gateway\Request\AuthorizationRequest">
+        <arguments>
+            <argument name="config" xsi:type="object">RewardsConfig</argument>
+            <argument name="countryMsg" xsi:type="object">RewardsCountryError</argument>
+            <argument name="groupMsg" xsi:type="object">RewardsGroupError</argument>
+        </arguments>
+    </type>
+    
+    <!-- Controllers data provider, initialized with RewardsConfig   -->
+  <type name="PointCheckout\Rewards\Block\Index">
+        <arguments>
+            <argument name="config" xsi:type="object">RewardsConfig</argument>
+        </arguments>
+    </type>
+    
+    <!--Payment Mode Source Data, initialized with RewardsConfig   -->
+    <type name="PointCheckout\Rewards\Model\Adminhtml\Source\PaymentMode">
+        <arguments>
+            <argument name="config" xsi:type="object">RewardsConfig</argument>
+        </arguments>
+    </type>
+    
+    <!-- Response handlers -->
+    <virtualType name="RewardsResponseHandlerComposite" type="Magento\Payment\Gateway\Response\HandlerChain">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="txnid" xsi:type="string">PointCheckout\Rewards\Gateway\Response\TxnIdHandler</item>
+                <item name="fraud" xsi:type="string">PointCheckout\Rewards\Gateway\Response\FraudHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Value handlers infrastructure -->
+    <virtualType name="RewardsValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">RewardsConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    
+     <!-- Value handlers, , initialized with RewardsConfig -->
+    <virtualType name="RewardsConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">RewardsConfig</argument>
+        </arguments>
+    </virtualType>
+
+</config>

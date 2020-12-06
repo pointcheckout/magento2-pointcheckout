@@ -1,0 +1,23 @@
+<?php
+
+$redirectUrl = $block->getPointCheckoutUrl();
+$returnUrl = $block->getReturnUrl();
+
+ ?>
+
+ <br/>
+   <img src="<?php echo $block->getViewFileUrl( 'PointCheckout_Card::images/please_wait.gif' );?>" /><br/>
+  
+  <form id="frm_pointcheckout_redirect" action="<?php echo $redirectUrl ?>" method="GET" style="display: none">
+         <input type="text" name = "returnUrl" hidden="true" value = "<?php echo $returnUrl?>"/>
+  
+  </form> 
+         <script type="text/javascript"> 
+            require([
+                'jquery'
+            ], function(jQuery) {
+                jQuery(document).ready(function () {
+                	  jQuery('#frm_pointcheckout_redirect').submit();
+                });
+            });         
+            </script>

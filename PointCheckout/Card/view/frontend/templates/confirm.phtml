@@ -1,0 +1,32 @@
+<?php
+
+ $response = array();
+ $response = $block->confirmPayment();
+ if(!$response){
+    $actionUrl = $block->getFailureUrl();
+ }else{
+     $response_info = json_decode($response);
+     if ($response_info ->success == true && $response_info ->result->status == 'PAID'){
+        $actionUrl = $block->getSuccessUrl();
+        
+     }elseif($response_info ->success == true && $response_info ->result->status == 'PENDING'){
+         $actionUrl = $block->getPointCheckoutUrl();
+         
+     }else{
+         $actionUrl = $block->getFailureUrl();
+     }
+ }
+ ?>
+<br/>
+   <img src="<?php echo $block->getViewFileUrl( 'PointCheckout_Card::images/please_wait.gif' );?>" /><br/>
+ <form id="frm_pointcheckout_confirm" action="<?php echo $actionUrl ?>" method="GET" style="display: none">
+  </form>
+        <script type="text/javascript">
+            require([
+                'jquery'
+            ], function(jQuery) {
+                jQuery(document).ready(function () {
+                	  jQuery('#frm_pointcheckout_confirm').submit();
+                });
+            });
+        </script>
