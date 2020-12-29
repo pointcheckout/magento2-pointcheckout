@@ -12,7 +12,7 @@ use Zend_Gdata_App_InvalidArgumentException;
 class AuthorizationRequest implements BuilderInterface
 {
 
-    const PC_EXT_VERSION = "Magento2-Card-2.0.0";
+    const PC_EXT_VERSION = "Magento2-Card-2.0.1";
 
     /**
      * @var ConfigInterface

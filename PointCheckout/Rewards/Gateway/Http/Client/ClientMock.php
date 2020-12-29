@@ -159,9 +159,10 @@ class ClientMock  implements ClientInterface
      * 
      */
     private function getCheckoutUrl(){
-        if ($this->config->getValue('pointcheckout_mode') == 2){
+        $mode = $this->config->getValue('pointcheckout_mode');
+        if ($mode == '2'){
             return 'https://api.staging.pointcheckout.com/mer/v1.2/checkouts';
-        }elseif($this->config->getValue('pointcheckout_mode') == 1){
+        }elseif($mode == '1'){
             return 'https://api.pointcheckout.com/mer/v1.2/checkouts';
         }
         return 'https://api.test.pointcheckout.com/mer/v1.2/checkouts';
