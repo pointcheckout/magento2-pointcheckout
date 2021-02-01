@@ -7,10 +7,10 @@
                 <debug>1</debug>
                 <active>0</active>
                 <model>RewardsFacade</model>
-                <order_status>pending_payment</order_status>
+                <!-- <order_status>pending_payment</order_status> -->
                 <payment_action>authorize</payment_action>
                 <pointcheckout_staging>0</pointcheckout_staging>
-                <title>PointCheckout Rewards</title> 
+                <title>PointCheckout Reward Payment</title> 
                 <allowuserspecific>0</allowuserspecific>
                 <currency>USD</currency>
                 <can_authorize>1</can_authorize>

@@ -36,7 +36,6 @@
             <argument name="secureUrlList" xsi:type="array">
                 <item name="pointcheckoutcard" xsi:type="string">/pointcheckoutcard/</item>
                 <item name="cardredirect" xsi:type="string">/cardredirect/</item>
-                
             </argument>
         </arguments>
     </type>

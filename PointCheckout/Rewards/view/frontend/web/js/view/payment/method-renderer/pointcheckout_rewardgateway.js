@@ -4,18 +4,29 @@ define(
     [
         'jquery',
         'Magento_Checkout/js/view/payment/default',
-        'Magento_Checkout/js/model/quote',
-        'Magento_Checkout/js/model/full-screen-loader',
-        'Magento_Checkout/js/action/set-payment-information',
         'Magento_Checkout/js/action/place-order',
+        'Magento_Checkout/js/action/select-payment-method',
+        'Magento_Customer/js/model/customer',
+        'Magento_Checkout/js/checkout-data',
+        'Magento_Checkout/js/model/payment/additional-validators',
+        'mage/url',
     ],
-    function ($, Component, quote, fullScreenLoader, setPaymentInformationAction, placeOrder) {
+    function ($,
+                Component,
+                placeOrderAction,
+                selectPaymentMethodAction,
+                customer,
+                checkoutData,
+                additionalValidators,
+                url
+        ) {
         'use strict';
+
         return Component.extend({
             defaults: {
                 template: 'PointCheckout_Rewards/payment/form'
             },
-          
+
             getCode: function() {
                 return 'pointcheckout_rewardgateway';
             },
@@ -25,32 +36,39 @@ define(
             context: function() {
                 return this;
             },
-            // Overwrite properties / functions
-            redirectAfterPlaceOrder: false,
-            
-            /**
-             * @override
-             */
-            placeOrder: function () {
-                var self = this;
-                var paymentData = quote.paymentMethod();
-                paymentData = JSON.parse(JSON.stringify(paymentData));
-                delete paymentData['title'];
-                var messageContainer = this.messageContainer;
-                fullScreenLoader.startLoader();
-                this.isPlaceOrderActionAllowed(false);
-                $.when(setPaymentInformationAction(this.messageContainer, {
-                    'method': self.getCode()
-                })).done(function () {
-                        $.when(placeOrder(paymentData, messageContainer)).done(function () {
-                            $.mage.redirect(window.checkoutConfig.payment.pointcheckout_rewardgateway.redirectUrl);
-                        });
-                }).fail(function () {
-                    self.isPlaceOrderActionAllowed(true);
-                }).always(function(){
-                    fullScreenLoader.stopLoader();
-                });
+            getRewardsImage: function() {
+            },
+
+            placeOrder: function (data, event) {
+                if (event) {
+                    event.preventDefault();
+                }
+                var self = this,
+                        placeOrder,
+                        emailValidationResult = customer.isLoggedIn(),
+                        loginFormSelector = 'form[data-role=email-with-possible-login]';
+                if (!customer.isLoggedIn()) {
+                    $(loginFormSelector).validation();
+                    emailValidationResult = Boolean($(loginFormSelector + ' input[name=username]').valid());
+                }
+                if (emailValidationResult && this.validate() && additionalValidators.validate()) {
+                    window.location.replace(url.build('rewardredirect/payment/redirect/'));
+                }
+                return false;
+            },
+
+            selectPaymentMethod: function () {
+                selectPaymentMethodAction(this.getData());
+                checkoutData.setSelectedPaymentMethod(this.item.method);
+                return true;
+            },
+
+            afterPlaceOrder: function () {
+                // window.location.replace(url.build('rewardredirect/payment/redirect/'));
+            },
+            /** Returns send check to info */
+            getMailingAddress: function () {
+                return window.checkoutConfig.payment.checkmo.mailingAddress;
             }
         });
-    }
-);
+});

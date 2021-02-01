@@ -9,7 +9,7 @@
         <referenceContainer name="footer-container" remove="true"/>
 
         <referenceContainer name="content">
-            <block class="PointCheckout\Rewards\Block\Index" template="PointCheckout_Rewards::redirect.phtml" cacheable="false" />
+            <block name="PointCheckout_Rewards_Redirect" class="PointCheckout\Rewards\Block\Index" template="PointCheckout_Rewards::redirect.phtml" cacheable="false" />
         </referenceContainer>
     </body>
 </page>

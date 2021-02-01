@@ -11,7 +11,6 @@ use Magento\Payment\Gateway\Response\HandlerInterface;
 
 class TxnIdHandler  implements HandlerInterface
 {
-    const TXN_ID = 'TXN_ID';
     /**
      * Handles transaction id
      *
@@ -33,11 +32,6 @@ class TxnIdHandler  implements HandlerInterface
         $payment = $paymentDO->getPayment();
 
         /** @var $payment \Magento\Sales\Model\Order\Payment */
-        $payment->setTransactionId($response[self::TXN_ID]);
-        $payment->setIsTransactionClosed(false);
-        
+        $payment->setIsTransactionClosed(false); 
     }
-    
-    
-    
 }

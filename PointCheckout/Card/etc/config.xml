@@ -7,7 +7,7 @@
                 <debug>1</debug>
                 <active>0</active>
                 <model>CardFacade</model>
-                <order_status>pending_payment</order_status>
+                <!-- <order_status>pending_payment</order_status> -->
                 <payment_action>authorize</payment_action>
                 <pointcheckout_staging>0</pointcheckout_staging>
                 <title>PointCheckout Card Payment</title> 

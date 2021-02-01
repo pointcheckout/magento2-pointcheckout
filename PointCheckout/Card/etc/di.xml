@@ -130,4 +130,5 @@
             <argument name="configInterface" xsi:type="object">CardConfig</argument>
         </arguments>
     </virtualType>
+
 </config>

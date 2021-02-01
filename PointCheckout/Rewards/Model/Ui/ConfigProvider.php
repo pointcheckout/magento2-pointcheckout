@@ -15,12 +15,19 @@ use Magento\Backend\App\AbstractAction;
 {
     const CODE = 'pointcheckout_rewardgateway';
     
+    private $moduleAssetDir;
+
+    private $config;
     
     public function __construct(
-        Context $context
+        Context $context,
+        \Magento\Framework\View\Asset\Repository $moduleAssetDir
+        // ,\Magento\Payment\Gateway\ConfigInterface $config
         ) {
             parent::__construct($context);
             $this->_url = $context->getUrl();
+            $this->moduleAssetDir = $moduleAssetDir;
+            // $this->config = $config;
     }
     
 
@@ -35,8 +42,8 @@ use Magento\Backend\App\AbstractAction;
             'payment' => [
                 self::CODE => [
                     'transactionResults' => [
-                        ClientMock::SUCCESS => __('Success'),
-                        ClientMock::FAILURE => __('Fraud')
+                        1 => __('Success'),
+                        0 => __('Fraud')
                     ],
                     'redirectUrl' => $this->_url->getRouteUrl('rewardredirect/payment/redirect')
                 ]

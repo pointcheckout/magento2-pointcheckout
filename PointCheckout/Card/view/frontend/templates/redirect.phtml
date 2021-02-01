@@ -1,23 +1,48 @@
 <?php
 
-$redirectUrl = $block->getPointCheckoutUrl();
-$returnUrl = $block->getReturnUrl();
 
- ?>
+$quote = $block->getQuote();
 
- <br/>
-   <img src="<?php echo $block->getViewFileUrl( 'PointCheckout_Card::images/please_wait.gif' );?>" /><br/>
-  
-  <form id="frm_pointcheckout_redirect" action="<?php echo $redirectUrl ?>" method="GET" style="display: none">
-         <input type="text" name = "returnUrl" hidden="true" value = "<?php echo $returnUrl?>"/>
-  
-  </form> 
-         <script type="text/javascript"> 
-            require([
-                'jquery'
-            ], function(jQuery) {
-                jQuery(document).ready(function () {
-                	  jQuery('#frm_pointcheckout_redirect').submit();
-                });
-            });         
-            </script>
+$returnUrl="";
+$redirectUrl = "";
+if (!$block->isReadyForPayment($quote)) {
+    $redirectUrl = $block->getStoreHome(); //$this->_storemanager->getStore()->getBaseUrl()
+} else {
+    $response = $block->submitPayment($quote);
+
+    if (!$response) {
+        echo '<center>Failed to parse response from gateway, please try again in a moment, </center>';
+        exit(0);
+    }
+    if ($response->success != 'true') {
+        echo '<center>Failed to proceed with payment, ' . $response->error . '</center>';
+        exit(0);
+    }
+
+    if (empty($response->result->redirectUrl)) {
+        echo '<center>Failed to parse response from gateway, please try again in a moment, </center>';
+        exit(0);
+    }
+
+    $redirectUrl = $response->result->redirectUrl;
+    $returnUrl = $block->getReturnUrl();
+}
+
+?>
+
+<br />
+<img src="<?php echo $block->getViewFileUrl('PointCheckout_Card::images/please_wait.gif'); ?>" /><br />
+
+<form id="frm_pointcheckout_redirect" action="<?php echo $redirectUrl ?>" method="GET" style="display: none">
+    <input type="text" name="returnUrl" hidden="true" value="<?php echo $returnUrl ?>" />
+
+</form>
+<script type="text/javascript">
+    require([
+        'jquery'
+    ], function(jQuery) {
+        jQuery(document).ready(function() {
+            jQuery('#frm_pointcheckout_redirect').submit();
+        });
+    });
+</script>

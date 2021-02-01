@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
-        <referenceBlock name="minicart" remove="true"/>
+        <referenceBlock name="minicart" remove="false" />
         <referenceContainer name="header.panel" remove="true"/>
         <referenceBlock name="top.search" remove="true"/>
         <referenceBlock name="catalog.compare.link" remove="true"/>
@@ -9,7 +9,7 @@
         <referenceContainer name="footer-container" remove="true"/>
 
         <referenceContainer name="content">
-            <block class="PointCheckout\Card\Block\Index" template="PointCheckout_Card::confirm.phtml" cacheable="false" />
+            <block name="PointCheckout_Card_Confirm" class="PointCheckout\Card\Block\Index" template="PointCheckout_Card::confirm.phtml" cacheable="false" />
         </referenceContainer>
     </body>
 </page>

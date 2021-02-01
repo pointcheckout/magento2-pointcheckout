@@ -1,33 +1,67 @@
 <?php
 
- $response = array();
- $response = $block->confirmPayment();
-
- if(!$response){
+$response_info = $block->confirmPayment();
+$success = false;
+if (!$response_info) {
     $actionUrl = $block->getFailureUrl();
- }else{
-     $response_info = json_decode($response);
-     if ($response_info ->success == true && $response_info ->result->status == 'PAID'){
+} else {
+    if ($response_info->success == true && $response_info->result->status == 'PAID') {
         $actionUrl = $block->getSuccessUrl();
-        
-     }elseif($response_info ->success == true && $response_info ->result->status == 'PENDING'){
-         $actionUrl = $block->getPointCheckoutUrl();
-         
-     }else{
-         $actionUrl = $block->getFailureUrl();
-     }
- }
- ?>
-<br/>
-   <img src="<?php echo $block->getViewFileUrl( 'PointCheckout_Rewards::images/please_wait.gif' );?>" /><br/>
- <form id="frm_pointcheckout_confirm" action="<?php echo $actionUrl ?>" method="GET" style="display: none">
-  </form>
-        <script type="text/javascript">
-            require([
-                'jquery'
-            ], function(jQuery) {
-                jQuery(document).ready(function () {
-                	  jQuery('#frm_pointcheckout_confirm').submit();
-                });
-            });
-        </script>
+        $success = true;
+    } elseif ($response_info->success == true && $response_info->result->status == 'PENDING') {
+        $actionUrl = $response_info->result->redirectUrl;
+        if (empty($actionUrl)) {
+            $actionUrl = $block->getFailureUrl();
+        }
+    } else {
+        $actionUrl = $block->getFailureUrl();
+    }
+}
+?>
+<style>
+    .minicart-wrapper { 
+        display:none;
+    }
+</style>
+<br />
+<img src="<?php echo $block->getViewFileUrl('PointCheckout_Rewards::images/please_wait.gif'); ?>" /><br />
+<form id="frm_pointcheckout_confirm" action="<?php echo $actionUrl ?>" method="GET" style="display: none">
+</form>
+<script type="text/javascript">
+    require([
+        'jquery',
+        'Magento_Customer/js/customer-data'
+    ], function(jQuery, customerData) {
+        jQuery(document).ready(function() {
+            let paid = <?php echo $success ? 'true' : 'false' ?>;
+            let t = 0;
+            if( paid ){
+                // this is a workaround to clear the cart
+                let interval = setInterval(() => {
+                    console.log("cart : " + jQuery(".minicart-wrapper .counter").length);
+                    if (jQuery(".minicart-wrapper .counter .counter-number").text().length > 0 && !isNaN(jQuery(".minicart-wrapper .counter .counter-number").text())) {
+                        try {
+                            customerData.invalidate(['cart']);
+                            customerData.reload(['cart'], true);
+                        } catch (ex) {
+                            console.log(" cart update error : " + ex.message);
+                        }
+                        setTimeout(() => { 
+                            jQuery('#frm_pointcheckout_confirm').submit();
+                        }, 1000)
+                        
+                        clearInterval(interval);
+                    }
+                    t += 100;
+                }, 100);
+
+                // if by 10 seconds the card did not load, redirect anyway
+                setTimeout(() => { 
+                    jQuery('#frm_pointcheckout_confirm').submit();
+                }, 10000)
+            } else {
+                jQuery('#frm_pointcheckout_confirm').submit();
+            }
+        });
+    });
+</script>

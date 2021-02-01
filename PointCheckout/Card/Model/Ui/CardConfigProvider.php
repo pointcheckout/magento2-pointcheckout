@@ -42,8 +42,8 @@ use Magento\Backend\App\AbstractAction;
             'payment' => [
                 self::CODE => [
                     'transactionResults' => [
-                        ClientMock::SUCCESS => __('Success'),
-                        ClientMock::FAILURE => __('Fraud')
+                        1 => __('Success'),
+                        0 => __('Fraud')
                     ],
                     'redirectUrl' => $this->_url->getRouteUrl('cardredirect/payment/redirect'),
                     'cardsImage' => $this->moduleAssetDir->getUrl( 'PointCheckout_Card::images/pointcheckout-cards.png' )
