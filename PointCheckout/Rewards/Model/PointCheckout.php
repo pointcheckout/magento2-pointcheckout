@@ -15,7 +15,7 @@ use Magento\Payment\Gateway\ConfigInterface;
  
 class PointCheckout
 {
-    const PC_EXT_VERSION = "Magento2-Reward-2.1.0";
+    const PC_EXT_VERSION = "Magento2-Reward-2.1.1";
 
     const API_URL = 'https://api.pointcheckout.com/mer/v1.2/';
     

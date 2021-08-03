@@ -5,7 +5,6 @@ use Magento\Payment\Gateway\ConfigInterface;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Sales\Model\Order;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
-use Magento\Sales\Helper\Reorder as ReorderHelper;
 use Magento\Framework\App\ObjectManager;
 
 
@@ -16,9 +15,7 @@ use Magento\Framework\Exception\InputException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\Data\CartInterface;
-use Magento\Quote\Model\Cart\CustomerCartResolver;
 use Magento\Quote\Model\Quote;
-use Magento\Quote\Model\GuestCart\GuestCartResolver;
 use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Sales\Model\Order\Item;
 use Magento\Sales\Model\OrderFactory;
@@ -37,10 +34,8 @@ class Index extends \Magento\Framework\View\Element\Template
     private $quotePaymentToOrderPayment;
     private $paymentFactory;
     private $orderFactory;
-    private $guestCartResolver;
 
     private $customerCartProvider;
-    private $reorderHelper;
     private $checkoutSession;
     private $productCollectionFactory;
     private $quoteManagement;
@@ -53,12 +48,6 @@ class Index extends \Magento\Framework\View\Element\Template
 
     private $pointCheckout;
     
-
-    /**
-     * @var \Magento\Sales\Model\Reorder\Reorder
-     */
-    private $reorder;
-
     public function __construct(\Magento\Framework\View\Element\Template\Context $context,
         \Magento\Checkout\Model\Session $session,
         ConfigInterface $config,
@@ -72,8 +61,6 @@ class Index extends \Magento\Framework\View\Element\Template
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Magento\Quote\Model\QuoteManagement $quoteManagement,
-        \Magento\Quote\Model\Cart\CustomerCartResolver $customerCartProvider,
-        \Magento\Sales\Helper\Reorder $reorderHelper, 
         \Magento\Customer\Model\Session $customerSession,
         \Magento\Checkout\Helper\Data $checkoutHelper,
         \Magento\Quote\Api\CartManagementInterface $cartManagement,
@@ -81,11 +68,9 @@ class Index extends \Magento\Framework\View\Element\Template
         \Magento\Quote\Model\Quote\Item $quoteItem,
 
         ProductCollectionFactory $productCollectionFactory,
-        \Magento\Quote\Model\GuestCart\GuestCartResolver $guestCartResolver,
         
         \PointCheckout\Rewards\Model\PointCheckout $pointCheckout,
-        CheckoutSession $checkoutSession = null,
-        \Magento\Sales\Model\Reorder\Reorder $reorder = null)
+        CheckoutSession $checkoutSession = null)
     {
         parent::__construct($context);
         $this->_session = $session;
@@ -96,11 +81,9 @@ class Index extends \Magento\Framework\View\Element\Template
         $this->productFactory = $productFactory;
         $this->quotePaymentToOrderPayment = $quotePaymentToOrderPayment;
         $this->paymentFactory = $paymentFactory;
-        $this->orderFactory = $orderFactory; 
-        $this->guestCartResolver = $guestCartResolver;
+        $this->orderFactory = $orderFactory;
         $this->customerCartProvider = $customerCartProvider;
         $this->checkoutSession = $checkoutSession ?: \Magento\Framework\App\ObjectManager::getInstance()->get(CheckoutSession::class);
-        $this->reorderHelper = $reorderHelper;
         $this->pointCheckout = $pointCheckout;
         $this->quoteManagement = $quoteManagement;
         $this->customerSession = $customerSession;
@@ -112,7 +95,6 @@ class Index extends \Magento\Framework\View\Element\Template
         $this->quote = $quote;
 
         $pointCheckout->setConfig($config);
-        $this->reorder = $reorder ?: ObjectManager::getInstance()->get(\Magento\Sales\Model\Reorder\Reorder::class);
 
         $this->productCollectionFactory = $productCollectionFactory;
 
